@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import Union
-from feature_store.data_extraction.base_data_loader import BaseFile, FileFormat
+from feature_store.data_extraction.base import BaseFile, FileFormat
 
 class FileIO(BaseFile):
     """
@@ -24,8 +24,8 @@ class FileIO(BaseFile):
         """
         if format is None:
             format = self._get_file_format(filepath)
-        with self.printer.print_msg(f'Loading data frame from \'{filepath}\''):
-            return self._read(filepath, format, **kwargs)
+        print(f'Loading data frame from \'{filepath}\'')
+        return self._read(filepath, format, **kwargs)
     
     def export(
         self,
@@ -44,5 +44,5 @@ class FileIO(BaseFile):
         """
         if format is None:
             format = self._get_file_format(filepath)
-        with self.printer.print_msg(f'Exporting data frame to \'{filepath}\''):
-            self._write(df, format, filepath, **kwargs)
+        print(f'Exporting data frame to \'{filepath}\'')
+        self._write(df, format, filepath, **kwargs)

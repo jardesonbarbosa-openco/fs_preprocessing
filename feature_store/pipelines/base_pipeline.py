@@ -1,8 +1,13 @@
+import pandas as pd
 
-class BasePipeline:
+from abc import ABC, abstractmethod
 
-    def read_data_source(self, datasource):
+class BasePipeline(ABC):
+
+    @abstractmethod
+    def load_dataset(self, dataset: str) -> pd.DataFrame:
         pass
 
-    def export_output(self, datasource, output):
+    @abstractmethod
+    def export_output(self, output: str) -> None:
         pass
