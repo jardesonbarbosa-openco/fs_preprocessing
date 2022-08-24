@@ -2,7 +2,9 @@ import re
 import numpy as np
 import pandas as pd
 
-def apply_regex_series(series: pd.Series, regex: re.Pattern, handle_nan=True):
+def apply_regex_series(series: pd.Series,
+                        regex: re.Pattern,
+                        handle_nan=True) -> np.array:
     """
     Applies compiled regex to pandas Series.
 

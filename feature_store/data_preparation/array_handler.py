@@ -1,6 +1,6 @@
 import bisect
 
-def find_le(ls: list, x: int):
+def find_le(ls: list, x: int) -> list:
     """
     Receives ordered list a and element x and rightmost
     value less than or equal to x.

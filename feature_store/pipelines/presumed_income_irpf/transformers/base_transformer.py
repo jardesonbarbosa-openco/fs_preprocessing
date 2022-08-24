@@ -4,13 +4,23 @@ import re
 import pandas as pd
 import numpy as np
 
-def explode_dict_col(df: pd.DataFrame, dict_col='riskInfo'):
-    '''Explodes risk_dict where each row is a
-    tax report year.'''
+def explode_dict_col(df: pd.DataFrame,
+                    dict_col='riskInfo',
+                    tax_report_col_name='tax_report_data') -> pd.DataFrame:
+    """
+    Explodes risk_dict where each row is a
+    tax report year.
+    Args:
+        df (pd.DataFrame): Dataframe containing dict column with tax data.
+        dict_col (str): Name of column to explode.
+        tax_report_col_name (str): Name of new column to receive exploded data.
+    Returns:
+        pd.DataFrame: New dataframe with exploded col as rows.
+    """
 
     df = df.copy()
 
-    df.loc[:, 'tax_report_data'] = (
+    df.loc[:, tax_report_col_name] = (
         df[dict_col].apply(
             lambda x: x.values()))
 
@@ -18,10 +28,16 @@ def explode_dict_col(df: pd.DataFrame, dict_col='riskInfo'):
 
     return df
 
-def get_irpf_status(df: pd.DataFrame, text_col: str):
-    '''Receives pandas dataframe and column name and applies
-    regex to column to generate new columns representing status
-    of irpf application. Returns dataframe with new columns.'''
+def get_irpf_status(df: pd.DataFrame, text_col: str) -> pd.DataFrame:
+    """
+    Applies regex to column to generate new columns representing status
+    of IRPF application.
+    Args:
+        df (pd.DataFrame): Dataframe with column to apply regex.
+        text_col (str): Name of column to apply regex.
+    Returns:
+        pd.DataFrame: Dataframe with IRPF status as columns
+    """
 
     df = df.copy()
 
@@ -68,18 +84,42 @@ def get_irpf_status(df: pd.DataFrame, text_col: str):
 
     return df
 
-def retrieve_stars(y: int, x: int, star_arr: np.array):
+def retrieve_stars(num_declarations: int,
+                    num_refunds: int,
+                    star_arr: np.array) -> int:
+    """
+    Retrives number of stars of a single IRPF application based on number
+    of declarations and tax refunds.
+    Args:
+        num_declarations (int): Number of times IRPF declared.
+        num_refunds (int): Number of times tax refunded.
+        star_arr: Matrix of stars where y is number of declarations and x
+        is number of refunds.
+    Returns:
+        int: Number of stars of application
+    """
+
     try:
-        if y >= 16:
+        if num_declarations >= 16:
             stars = 5
         else:
-            stars = star_arr[y][x]
+            stars = star_arr[num_declarations][num_refunds]
     except IndexError:
         return -1
     else:
         return stars
 
-def set_star_number(arr_declarations: np.array, arr_refunds: np.array):
+def set_star_number(arr_declarations: np.array,
+                    arr_refunds: np.array) -> np.array:
+    """
+    Retrieve number of stars based on array of declarations and array of refunds.
+    Args:
+        arr_declarations (int): Array of umber of times IRPF declared.
+        arr_refunds (int): Array of umber of times tax refunded.
+    Returns:
+        np.array: Array of number of IRPF stars.
+    """
+
     base_arr = [
         [0],
         [1, 1],
@@ -115,8 +155,21 @@ def get_presumed_income(year: int,
                         irpf_dict: dict,
                         branch_pl: str,
                         star_dict: dict,
-                        year_list: list):
-
+                        year_list: list) -> np.array:
+    """
+    Get the presumed income of a single CPF for a loan application
+    based on past IRPF data.
+    Args:
+        year (int): Year of loan application.
+        irpf_dict (dict): Dict of past IRPF declarations
+        based on bank branchs.
+        branch_pl (str): Code of bank branch of loan application.
+        star_dict (dict): Base dict of stars to retrieve presumed income
+        based on brank branch.
+        year_list (list): List of years present in star_dict.
+    Returns:
+        np.array: Array of number of IRPF stars.
+    """
     year_d = str(array_handler.find_le(year_list, year))
     
     presumed_income_set = set()
@@ -142,7 +195,18 @@ def get_presumed_income(year: int,
 
     return max(presumed_income_set)
 
-def calculate_presumed_income(df: pd.DataFrame, income_dict: dict):
+def calculate_presumed_income(df: pd.DataFrame,
+                                income_dict: dict) -> pd.Series:
+    """
+    Calculate presumed income of a dict of cpfs with one-hot encoded
+    IRPF declarations and refunds.
+    Args:
+        df (pd.DataFrame): Dataframe with data to calculate presumed income.
+        income_dict (dict): Base dict of stars to retrieve presumed income
+        based on brank branch.
+    Returns:
+        pd.Series: Pandas Series with presumed income per CPF.
+    """
 
     year_list = [int(x) for x in list(income_dict.keys())]
     year_list.sort()

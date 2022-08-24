@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
+from typing import Any
 
 import orjson
 
-def get_json_value(df: pd.DataFrame, col: str):
+def get_json_value(df: pd.DataFrame, col: str) -> pd.DataFrame:
     """
     Takes a pandas dataframe and a string column-name.
     Extracts json object from specified column in dataframe.
@@ -31,7 +32,8 @@ def get_json_value(df: pd.DataFrame, col: str):
         col_lst = data.columns.difference(df.columns)
         return df.join(data[col_lst])
 
-def extract_value_dict(data: dict, key: str, default=np.nan):
+def extract_value_dict(data: dict, key: str,
+                        default=np.nan) -> Any:
     """
     Function receives dictionary with key string
     and returns value. If default is provided, returns
@@ -51,7 +53,9 @@ def extract_value_dict(data: dict, key: str, default=np.nan):
 
     return status
 
-def map_normalize_dict(df: pd.DataFrame, col: str, map:dict):
+def map_normalize_dict(df: pd.DataFrame,
+                        col: str,
+                        map:dict) -> pd.DataFrame:
     """
     Receives Pandas dataframe, column name and
     dictionary containing new column names as keys and dict
